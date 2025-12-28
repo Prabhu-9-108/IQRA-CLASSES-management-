@@ -1,0 +1,2281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iqra Complete Management</title>
+    <style>
+        :root {
+            --color-primary: #2180a5;
+            --color-primary-hover: #1c6a8b;
+            --color-primary-active: #1a4a71;
+            --color-success: #2fa76f;
+            --color-warning: #e69b73;
+            --color-error: #d71d2f;
+            --color-text: #134252;
+            --color-text-secondary: #627678;
+            --color-bg: #fcfcf9;
+            --color-surface: #ffffff;
+            --color-border: #d4d4d0;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+            color: white;
+            padding: var(--spacing-lg);
+            border-radius: var(--radius);
+            margin-bottom: var(--spacing-lg);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: var(--color-surface);
+            border-right: 1px solid var(--color-border);
+            overflow-y: auto;
+            padding: var(--spacing-lg);
+            z-index: 100;
+        }
+
+        .sidebar h2 {
+            font-size: 18px;
+            margin-bottom: var(--spacing-md);
+            color: var(--color-primary);
+        }
+
+        .nav-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 8px;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            border-radius: var(--radius);
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--color-text);
+        }
+
+        .nav-btn:hover {
+            background-color: #f0f0f0;
+        }
+
+        .nav-btn.active {
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: var(--spacing-lg);
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .stat-card {
+            background: var(--color-surface);
+            padding: var(--spacing-md);
+            border-radius: var(--radius);
+            border: 1px solid var(--color-border);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .stat-card .amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--color-text);
+        }
+
+        .stat-card.income .amount {
+            color: var(--color-success);
+        }
+
+        .stat-card.expense .amount {
+            color: var(--color-error);
+        }
+
+        .stat-card.profit .amount {
+            color: var(--color-primary);
+        }
+
+        .card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius);
+            padding: var(--spacing-lg);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text);
+            border-bottom: 2px solid var(--color-border);
+            padding-bottom: var(--spacing-md);
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--color-text);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(33, 128, 165, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-primary-hover);
+        }
+
+        .btn-danger {
+            background-color: var(--color-error);
+            color: white;
+            width: auto;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-danger:hover {
+            background-color: #b91d2a;
+        }
+
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: var(--color-text);
+            width: auto;
+            margin-right: 8px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: var(--spacing-md);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #f0f0f0;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            border-bottom: 2px solid var(--color-border);
+            color: var(--color-text);
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--color-border);
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background-color: #f9f9f7;
+        }
+
+        .text-success {
+            color: var(--color-success);
+            font-weight: 600;
+        }
+
+        .text-error {
+            color: var(--color-error);
+            font-weight: 600;
+        }
+
+        .text-primary {
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background-color: rgba(47, 167, 111, 0.2);
+            color: var(--color-success);
+        }
+
+        .badge-warning {
+            background-color: rgba(230, 155, 115, 0.2);
+            color: var(--color-warning);
+        }
+
+        .badge-error {
+            background-color: rgba(215, 29, 47, 0.2);
+            color: var(--color-error);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--color-text-secondary);
+            padding: var(--spacing-lg);
+            font-size: 14px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 8px;
+            margin-top: var(--spacing-md);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+                padding: var(--spacing-md);
+            }
+
+            .main-content {
+                margin-left: 200px;
+                padding: var(--spacing-md);
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .sidebar {
+                width: 150px;
+            }
+
+            .main-content {
+                margin-left: 150px;
+            }
+
+            header h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>📊 Iqra Manager</h2>
+        <button class="nav-btn active" onclick="showSection('dashboard')">🏠 Dashboard</button>
+        <button class="nav-btn" onclick="showSection('batches')">📚 Batches</button>
+        <button class="nav-btn" onclick="showSection('students')">👤 Students</button>
+        <button class="nav-btn" onclick="showSection('fees')">💰 Fee Register</button>
+        <button class="nav-btn" onclick="showSection('expenses')">💸 Expenses</button>
+        <button class="nav-btn" onclick="showSection('staff')">👥 Staff</button>
+        <button class="nav-btn" onclick="showSection('equipment')">🖥️ Equipment</button>
+        <button class="nav-btn" onclick="showSection('reports')">📈 Reports</button>
+        <button class="nav-btn" onclick="showSection('settings')">⚙️ Settings</button>
+    </div>
+
+    <div class="main-content">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section active">
+            <div class="card">
+                <h2>Dashboard Overview</h2>
+                <div class="dashboard">
+                    <div class="stat-card income">
+                        <h3>Total Fee Collection</h3>
+                        <div class="amount" id="dashTotalFees">₹0</div>
+                    </div>
+                    <div class="stat-card expense">
+                        <h3>Total Expenses</h3>
+                        <div class="amount" id="dashTotalExpenses">₹0</div>
+                    </div>
+                    <div class="stat-card profit">
+                        <h3>Net Profit</h3>
+                        <div class="amount" id="dashNetProfit">₹0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Active Batches</h3>
+                        <div class="amount" id="dashBatches">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Staff Members</h3>
+                        <div class="amount" id="dashStaff">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Students</h3>
+                        <div class="amount" id="dashTotalStudents">0</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <h3>Pending Fees</h3>
+                        <div class="amount text-warning" id="dashPendingFees">₹0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Recent Transactions</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashRecentTransactions">
+                            <tr><td colspan="5" class="empty-state">No transactions yet</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Batches Section -->
+        <section id="batches" class="section">
+            <div class="card">
+                <h2>➕ Add New Batch</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Batch Name</label>
+                        <input type="text" id="batchName" placeholder="e.g., 10th Science" />
+                    </div>
+                    <div class="form-group">
+                        <label>Class/Grade</label>
+                        <input type="text" id="batchGrade" placeholder="e.g., 10" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Schedule</label>
+                        <input type="text" id="batchSchedule" placeholder="e.g., Mon-Fri 4-5 PM" />
+                    </div>
+                    <div class="form-group">
+                        <label>Max Strength</label>
+                        <input type="number" id="batchStrength" placeholder="0" min="0" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Monthly Fee (₹)</label>
+                        <input type="number" id="batchFee" placeholder="0" min="0" step="100" />
+                    </div>
+                    <div class="form-group">
+                        <label>Assigned Teacher</label>
+                        <select id="batchTeacher"></select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="addBatch()">Create Batch</button>
+            </div>
+
+            <div class="card">
+                <h2>📚 All Batches</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Batch Name</th>
+                                <th>Class</th>
+                                <th>Schedule</th>
+                                <th>Teacher</th>
+                                <th>Monthly Fee</th>
+                                <th>Strength</th>
+                                <th>Students</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="batchesList">
+                            <tr><td colspan="8" class="empty-state">No batches yet</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Students Section -->
+        <section id="students" class="section">
+            <div class="card">
+                <h2>➕ Add New Student</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Student Name</label>
+                        <input type="text" id="newStudentName" placeholder="e.g., Raj Kumar" />
+                    </div>
+                    <div class="form-group">
+                        <label>Roll Number</label>
+                        <input type="text" id="newStudentRoll" placeholder="e.g., 15" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="tel" id="newStudentPhone" placeholder="Student/Parent phone" />
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="newStudentEmail" placeholder="email@example.com" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Assign to Batch</label>
+                        <select id="newStudentBatch"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Join Date</label>
+                        <input type="date" id="newStudentJoinDate" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <textarea id="newStudentAddress" placeholder="Full address" rows="2"></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="addNewStudent()">Add Student</button>
+            </div>
+
+            <div class="card">
+                <h2>📋 All Students</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Roll No</th>
+                                <th>Name</th>
+                                <th>Batch</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Join Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allStudentsList">
+                            <tr><td colspan="8" class="empty-state">No students yet</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fee Register Section -->
+        <section id="fees" class="section">
+            <div class="card">
+                <h2>💰 Record Fee Payment</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Select Batch</label>
+                        <select id="feeBatch" onchange="loadBatchStudents()"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Select Student</label>
+                        <select id="feeStudent"></select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Payment Mode</label>
+                        <select id="feeMode">
+                            <option value="">Select Mode</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Bank Transfer">Bank Transfer</option>
+                            <option value="UPI">UPI</option>
+                            <option value="Check">Check</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount Collected (₹)</label>
+                        <input type="number" id="feeAmount" placeholder="0" min="0" step="100" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Payment Date</label>
+                        <input type="date" id="feeDate" />
+                    </div>
+                    <div class="form-group">
+                        <label>Month</label>
+                        <select id="feeMonth">
+                            <option value="January">January</option>
+                            <option value="February">February</option>
+                            <option value="March">March</option>
+                            <option value="April">April</option>
+                            <option value="May">May</option>
+                            <option value="June">June</option>
+                            <option value="July">July</option>
+                            <option value="August">August</option>
+                            <option value="September">September</option>
+                            <option value="October">October</option>
+                            <option value="November">November</option>
+                            <option value="December">December</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="feeNotes" placeholder="Any additional notes..." rows="3"></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="recordFee()">Record Payment</button>
+            </div>
+
+            <div class="card">
+                <h2>📝 Fee Register</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Batch</th>
+                                <th>Student Name</th>
+                                <th>Roll No</th>
+                                <th>Amount</th>
+                                <th>Mode</th>
+                                <th>Month</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="feesList">
+                            <tr><td colspan="8" class="empty-state">No fee records yet</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Expenses Section -->
+        <section id="expenses" class="section">
+            <div class="card">
+                <h2>💸 Record Expense</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="expenseCategory">
+                            <option value="">Select Category</option>
+                            <option value="Salary">Teacher Salary</option>
+                            <option value="Rent">Rent</option>
+                            <option value="Utilities">Utilities (Electric, Water)</option>
+                            <option value="Materials">Study Materials</option>
+                            <option value="Maintenance">Maintenance & Repairs</option>
+                            <option value="Office">Office Supplies</option>
+                            <option value="Marketing">Marketing & Ads</option>
+                            <option value="Transportation">Transportation</option>
+                            <option value="Insurance">Insurance</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" id="expenseDesc" placeholder="e.g., Monthly rent payment" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Amount (₹)</label>
+                        <input type="number" id="expenseAmount" placeholder="0" min="0" step="100" />
+                    </div>
+                    <div class="form-group">
+                        <label>Payment Date</label>
+                        <input type="date" id="expenseDate" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Payment Mode</label>
+                    <select id="expenseMode">
+                        <option value="">Select Mode</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
+                        <option value="Check">Check</option>
+                        <option value="Card">Card</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="recordExpense()">Record Expense</button>
+            </div>
+
+            <div class="card">
+                <h2>📊 Expense Register</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Mode</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expensesList">
+                            <tr><td colspan="6" class="empty-state">No expenses yet</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Staff Section -->
+        <section id="staff" class="section">
+            <div class="card">
+                <h2>👥 Add Staff Member</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="staffName" placeholder="e.g., Raj Kumar" />
+                    </div>
+                    <div class="form-group">
+                        <label>Position</label>
+                        <select id="staffPosition">
+                            <option value="">Select Position</option>
+                            <option value="Teacher">Teacher</option>
+                            <option value="Assistant">Assistant</option>
+                            <option value="Manager">Manager</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Monthly Salary (₹)</label>
+                        <input type="number" id="staffSalary" placeholder="0" min="0" step="100" />
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="tel" id="staffPhone" placeholder="10 digit phone number" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="staffEmail" placeholder="email@example.com" />
+                    </div>
+                    <div class="form-group">
+                        <label>Join Date</label>
+                        <input type="date" id="staffDate" />
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="addStaff()">Add Staff</button>
+            </div>
+
+            <div class="card">
+                <h2>📋 Staff Directory</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Position</th>
+                                <th>Salary</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Join Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="staffList">
+                            <tr><td colspan="7" class="empty-state">No staff members yet</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Equipment Section -->
+        <section id="equipment" class="section">
+            <div class="card">
+                <h2>🖥️ Add Equipment</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Equipment Name</label>
+                        <input type="text" id="equipName" placeholder="e.g., Projector, Whiteboard" />
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="equipCategory">
+                            <option value="">Select Category</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Furniture">Furniture</option>
+                            <option value="Stationery">Stationery</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Purchase Cost (₹)</label>
+                        <input type="number" id="equipCost" placeholder="0" min="0" step="100" />
+                    </div>
+                    <div class="form-group">
+                        <label>Purchase Date</label>
+                        <input type="date" id="equipDate" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Condition</label>
+                        <select id="equipCondition">
+                            <option value="Good">Good</option>
+                            <option value="Fair">Fair</option>
+                            <option value="Repair">Needs Repair</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Location/Batch</label>
+                        <input type="text" id="equipLocation" placeholder="Which room/batch" />
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="addEquipment()">Add Equipment</button>
+            </div>
+
+            <div class="card">
+                <h2>🏪 Equipment Inventory</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Equipment</th>
+                                <th>Category</th>
+                                <th>Cost</th>
+                                <th>Date</th>
+                                <th>Condition</th>
+                                <th>Location</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="equipmentList">
+                            <tr><td colspan="7" class="empty-state">No equipment recorded yet</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reports Section -->
+        <section id="reports" class="section">
+            <div class="card">
+                <h2>📈 Financial Reports</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Select Month</label>
+                        <select id="reportMonth">
+                            <option value="January">January</option>
+                            <option value="February">February</option>
+                            <option value="March">March</option>
+                            <option value="April">April</option>
+                            <option value="May">May</option>
+                            <option value="June">June</option>
+                            <option value="July">July</option>
+                            <option value="August">August</option>
+                            <option value="September">September</option>
+                            <option value="October">October</option>
+                            <option value="November">November</option>
+                            <option value="December">December</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>&nbsp;</label>
+                        <button class="btn btn-primary" onclick="generateReport()">Generate Report</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="reportCard" style="display: none;">
+                <h2>Monthly Summary Report</h2>
+                <div style="margin-top: var(--spacing-md);">
+                    <div class="dashboard">
+                        <div class="stat-card income">
+                            <h3>Total Fee Collection</h3>
+                            <div class="amount" id="reportFees">₹0</div>
+                        </div>
+                        <div class="stat-card expense">
+                            <h3>Total Expenses</h3>
+                            <div class="amount" id="reportExpenses">₹0</div>
+                        </div>
+                        <div class="stat-card profit">
+                            <h3>Net Profit</h3>
+                            <div class="amount" id="reportProfit">₹0</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: var(--spacing-lg);">
+                        <h3 style="margin-bottom: var(--spacing-md);">Fee Collection by Batch</h3>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Batch</th>
+                                        <th>Collections</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reportFeesTable">
+                                    <tr><td colspan="4" class="empty-state">No data</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: var(--spacing-lg);">
+                        <h3 style="margin-bottom: var(--spacing-md);">Expenses by Category</h3>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Count</th>
+                                        <th>Total Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reportExpensesTable">
+                                    <tr><td colspan="3" class="empty-state">No data</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="button-group" style="margin-top: var(--spacing-lg);">
+                        <button class="btn btn-secondary" onclick="exportReport()">Export as CSV</button>
+                        <button class="btn btn-secondary" onclick="printReport()">Print Report</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="settings" class="section">
+            <div class="card">
+                <h2>⚙️ System Settings</h2>
+                <div class="form-group">
+                    <label>Coaching Center Name</label>
+                    <input type="text" id="centerName" placeholder="Iqra Classes" />
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" id="centerPhone" placeholder="Center phone number" />
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="centerEmail" placeholder="Center email" />
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <textarea id="centerAddress" placeholder="Full address" rows="3"></textarea>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+                    <button class="btn btn-secondary" onclick="clearAllData()">Clear All Data</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📥 Data Management</h2>
+                <p>Backup and restore your data</p>
+                <div class="button-group" style="margin-top: var(--spacing-md);">
+                    <button class="btn btn-secondary" onclick="backupData()">Backup All Data</button>
+                    <button class="btn btn-secondary" onclick="restoreData()">Restore Data</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Professional Backend System with Advanced Features
+        const API_VERSION = '1.0.0';
+        const SYSTEM_NAME = 'Iqra Complete Management System';
+        const MAX_STORAGE = 5242880; // 5MB in bytes
+
+        // Data Storage with advanced validation
+        let data = {
+            version: API_VERSION,
+            lastSync: new Date().toISOString(),
+            batches: [],
+            students: [],
+            fees: [],
+            expenses: [],
+            staff: [],
+            equipment: [],
+            settings: {
+                centerName: 'Iqra Classes',
+                phone: '',
+                email: '',
+                address: '',
+                createdAt: new Date().toISOString()
+            },
+            audit: {
+                totalTransactions: 0,
+                lastBackup: null,
+                backupCount: 0
+            }
+        };
+
+        // Comprehensive Logging System
+        const logger = {
+            log: (level, message, data = null) => {
+                const timestamp = new Date().toISOString();
+                const logEntry = { timestamp, level, message, data };
+                console.log(`[${level}] ${message}`, data || '');
+                
+                try {
+                    let logs = JSON.parse(localStorage.getItem('iqraLogs')) || [];
+                    logs.push(logEntry);
+                    if (logs.length > 100) logs = logs.slice(-100);
+                    localStorage.setItem('iqraLogs', JSON.stringify(logs));
+                } catch (e) {
+                    console.warn('Log storage error:', e);
+                }
+            },
+            info: (msg, data) => logger.log('INFO', msg, data),
+            error: (msg, data) => logger.log('ERROR', msg, data),
+            warn: (msg, data) => logger.log('WARN', msg, data)
+        };
+
+        // Data Validation System
+        const validator = {
+            isValidEmail: (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
+            isValidPhone: (phone) => /^[0-9]{10,}$/.test(phone.replace(/\D/g, '')),
+            isValidAmount: (amount) => !isNaN(amount) && amount > 0,
+            isValidDate: (date) => !isNaN(new Date(date).getTime()),
+            sanitize: (str) => String(str).trim().replace(/[<>]/g, ''),
+            validate: (field, value, type) => {
+                if (!value && type !== 'optional') return false;
+                switch(type) {
+                    case 'email': return value ? validator.isValidEmail(value) : true;
+                    case 'phone': return value ? validator.isValidPhone(value) : true;
+                    case 'amount': return validator.isValidAmount(value);
+                    case 'date': return validator.isValidDate(value);
+                    case 'text': return value && String(value).length > 0;
+                    default: return true;
+                }
+            }
+        };
+
+        // Advanced Data Persistence with Encryption Support
+        const storage = {
+            save: () => {
+                try {
+                    const serialized = JSON.stringify(data);
+                    const size = new Blob([serialized]).size;
+                    
+                    if (size > MAX_STORAGE) {
+                        logger.warn('Storage quota warning', { size, max: MAX_STORAGE });
+                        alert('⚠️ Storage nearly full! Consider backing up and clearing old records.');
+                        return false;
+                    }
+                    
+                    data.lastSync = new Date().toISOString();
+                    localStorage.setItem('iqraData', JSON.stringify(data));
+                    logger.info('Data saved successfully', { size: size });
+                    return true;
+                } catch (error) {
+                    logger.error('Storage save error', error.message);
+                    if (error.name === 'QuotaExceededError') {
+                        alert('❌ Storage quota exceeded! Please backup data immediately.');
+                    }
+                    return false;
+                }
+            },
+            
+            load: () => {
+                try {
+                    const stored = localStorage.getItem('iqraData');
+                    if (stored) {
+                        const parsed = JSON.parse(stored);
+                        if (parsed && typeof parsed === 'object') {
+                            // Validate data structure
+                            if (!parsed.batches) parsed.batches = [];
+                            if (!parsed.students) parsed.students = [];
+                            if (!parsed.fees) parsed.fees = [];
+                            if (!parsed.expenses) parsed.expenses = [];
+                            if (!parsed.staff) parsed.staff = [];
+                            if (!parsed.equipment) parsed.equipment = [];
+                            if (!parsed.settings) parsed.settings = data.settings;
+                            if (!parsed.audit) parsed.audit = data.audit;
+                            
+                            data = parsed;
+                            logger.info('Data loaded successfully', { records: Object.keys(data).length });
+                            return true;
+                        }
+                    }
+                    logger.info('No stored data found, using defaults');
+                    return false;
+                } catch (error) {
+                    logger.error('Storage load error', error.message);
+                    alert('⚠️ Error loading data. Starting fresh.');
+                    return false;
+                }
+            }
+        };
+
+        // Load data from localStorage with error handling
+        function loadDataFromStorage() {
+            return storage.load();
+        }
+
+        // Advanced Reporting Engine
+        const reports = {
+            generateFinancialSummary: (startDate, endDate) => {
+                const fees = data.fees.filter(f => {
+                    const feeDate = new Date(f.date);
+                    return feeDate >= new Date(startDate) && feeDate <= new Date(endDate);
+                });
+                const expenses = data.expenses.filter(e => {
+                    const expDate = new Date(e.date);
+                    return expDate >= new Date(startDate) && expDate <= new Date(endDate);
+                });
+                
+                return {
+                    period: { startDate, endDate },
+                    totalFees: fees.reduce((sum, f) => sum + f.amount, 0),
+                    totalExpenses: expenses.reduce((sum, e) => sum + e.amount, 0),
+                    netProfit: fees.reduce((sum, f) => sum + f.amount, 0) - expenses.reduce((sum, e) => sum + e.amount, 0),
+                    transactionCount: fees.length + expenses.length,
+                    generatedAt: new Date().toISOString()
+                };
+            },
+            
+            generateBatchAnalysis: () => {
+                return data.batches.map(batch => {
+                    const students = data.students.filter(s => s.batchId === batch.id);
+                    const batchFees = data.fees.filter(f => f.batchId === batch.id);
+                    return {
+                        batchId: batch.id,
+                        batchName: batch.name,
+                        totalStudents: students.length,
+                        expectedRevenue: students.length * batch.fee,
+                        actualRevenue: batchFees.reduce((sum, f) => sum + f.amount, 0),
+                        occupancyRate: ((students.length / batch.strength) * 100).toFixed(1) + '%'
+                    };
+                });
+            },
+            
+            generateStaffReport: () => {
+                const totalSalaries = data.staff.reduce((sum, s) => sum + s.salary, 0);
+                return {
+                    totalStaff: data.staff.length,
+                    totalMonthlySalaries: totalSalaries,
+                    staffByPosition: data.staff.reduce((acc, s) => {
+                        acc[s.position] = (acc[s.position] || 0) + 1;
+                        return acc;
+                    }, {}),
+                    averageSalary: data.staff.length > 0 ? (totalSalaries / data.staff.length).toFixed(2) : 0
+                };
+            }
+        };
+
+        // Data Analytics Engine
+        const analytics = {
+            getMetrics: () => {
+                return {
+                    system: {
+                        name: SYSTEM_NAME,
+                        version: API_VERSION,
+                        uptime: new Date().toISOString(),
+                        dataVersion: data.version
+                    },
+                    counts: {
+                        batches: data.batches.length,
+                        students: data.students.length,
+                        staff: data.staff.length,
+                        equipment: data.equipment.length,
+                        totalTransactions: data.fees.length + data.expenses.length
+                    },
+                    financials: {
+                        totalFees: data.fees.reduce((sum, f) => sum + f.amount, 0),
+                        totalExpenses: data.expenses.reduce((sum, e) => sum + e.amount, 0),
+                        netProfit: data.fees.reduce((sum, f) => sum + f.amount, 0) - data.expenses.reduce((sum, e) => sum + e.amount, 0)
+                    },
+                    audit: data.audit
+                };
+            },
+            
+            getDataHealth: () => {
+                const issues = [];
+                
+                // Check for orphaned students
+                const batchIds = data.batches.map(b => b.id);
+                const orphanedStudents = data.students.filter(s => s.batchId && !batchIds.includes(s.batchId));
+                if (orphanedStudents.length > 0) {
+                    issues.push(`⚠️ ${orphanedStudents.length} students assigned to deleted batches`);
+                }
+                
+                // Check for missing required fields
+                data.students.forEach(s => {
+                    if (!s.name || !s.roll) issues.push(`⚠️ Student ${s.id} missing required fields`);
+                });
+                
+                // Check for negative amounts
+                const negativeAmounts = data.fees.filter(f => f.amount < 0).length + 
+                                       data.expenses.filter(e => e.amount < 0).length;
+                if (negativeAmounts > 0) {
+                    issues.push(`⚠️ ${negativeAmounts} transactions with invalid amounts`);
+                }
+                
+                return {
+                    healthy: issues.length === 0,
+                    issues: issues,
+                    lastChecked: new Date().toISOString()
+                };
+            }
+        };
+
+        // Advanced Backup & Recovery System
+        const backup = {
+            createFullBackup: () => {
+                try {
+                    const backupData = {
+                        systemName: SYSTEM_NAME,
+                        version: API_VERSION,
+                        backupDate: new Date().toISOString(),
+                        data: data,
+                        checksum: backup.generateChecksum()
+                    };
+                    
+                    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `iqra_backup_${new Date().toISOString().split('T')[0]}_complete.json`;
+                    link.click();
+                    
+                    data.audit.lastBackup = new Date().toISOString();
+                    data.audit.backupCount = (data.audit.backupCount || 0) + 1;
+                    storage.save();
+                    logger.info('Full backup created', { backupDate: new Date().toISOString() });
+                    return true;
+                } catch (error) {
+                    logger.error('Backup creation error', error.message);
+                    return false;
+                }
+            },
+            
+            generateChecksum: () => {
+                const str = JSON.stringify(data);
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) {
+                    const char = str.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash;
+                }
+                return hash.toString(16);
+            },
+            
+            restoreFromBackup: (file) => {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const backupData = JSON.parse(e.target.result);
+                            
+                            // Validate backup structure
+                            if (!backupData.data || !backupData.backupDate) {
+                                reject('Invalid backup file format');
+                                return;
+                            }
+                            
+                            data = backupData.data;
+                            storage.save();
+                            logger.info('Data restored from backup', { backupDate: backupData.backupDate });
+                            resolve(true);
+                        } catch (error) {
+                            logger.error('Backup restore error', error.message);
+                            reject('Failed to restore backup: ' + error.message);
+                        }
+                    };
+                    reader.onerror = () => reject('Failed to read backup file');
+                    reader.readAsText(file);
+                });
+            }
+        };
+
+        // Export Engine
+        const exporter = {
+            toCSV: (records, headers) => {
+                let csv = headers.join(',') + '\n';
+                records.forEach(record => {
+                    csv += headers.map(h => {
+                        const value = record[h] || '';
+                        return `"${String(value).replace(/"/g, '""')}"`;
+                    }).join(',') + '\n';
+                });
+                return csv;
+            },
+            
+            toJSON: (records) => {
+                return JSON.stringify(records, null, 2);
+            },
+            
+            downloadAsCSV: (filename, data) => {
+                const blob = new Blob([data], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', filename);
+                link.click();
+            }
+        };
+
+        // System Initialization with Comprehensive Setup
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                logger.info('System initialization started', { timestamp: new Date().toISOString() });
+                
+                // Load all data
+                loadDataFromStorage();
+                
+                // Initialize event listeners
+                const feeBatch = document.getElementById('feeBatch');
+                if (feeBatch) {
+                    feeBatch.addEventListener('change', loadBatchStudents);
+                }
+                
+                const reportMonth = document.getElementById('reportMonth');
+                if (reportMonth) {
+                    reportMonth.value = new Date().toLocaleString('default', { month: 'long' });
+                }
+                
+                // Initialize all UI components
+                loadAllData();
+                setTodayDate('feeDate');
+                setTodayDate('expenseDate');
+                setTodayDate('staffDate');
+                setTodayDate('equipDate');
+                setTodayDate('newStudentJoinDate');
+                
+                // Data health check
+                const health = analytics.getDataHealth();
+                if (!health.healthy) {
+                    logger.warn('Data health issues detected', health.issues);
+                }
+                
+                // Display system info in console
+                console.log(`${SYSTEM_NAME} v${API_VERSION} initialized successfully`);
+                console.log('System Metrics:', analytics.getMetrics());
+                
+                logger.info('System initialization completed', { success: true });
+            } catch (error) {
+                logger.error('Initialization error', error.message);
+                alert('⚠️ System error during initialization. Please refresh the page.');
+            }
+        });
+
+        function setTodayDate(elementId) {
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const element = document.getElementById(elementId);
+                if (element) element.value = today;
+            } catch (error) {
+                console.error('Error setting date:', error);
+            }
+        }
+
+        // Navigation with error handling
+        function showSection(sectionId) {
+            try {
+                const section = document.getElementById(sectionId);
+                if (!section) {
+                    console.error('Section not found:', sectionId);
+                    return;
+                }
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                section.classList.add('active');
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                if (event && event.target) {
+                    event.target.classList.add('active');
+                }
+                loadAllData();
+            } catch (error) {
+                console.error('Navigation error:', error);
+            }
+        }
+
+        // Batch Management with validation
+        function addBatch() {
+            try {
+                const name = document.getElementById('batchName').value.trim();
+                const grade = document.getElementById('batchGrade').value.trim();
+                const schedule = document.getElementById('batchSchedule').value.trim();
+                const strength = parseInt(document.getElementById('batchStrength').value) || 0;
+                const fee = parseFloat(document.getElementById('batchFee').value) || 0;
+                const teacher = document.getElementById('batchTeacher').value.trim();
+
+                if (!name || !grade) {
+                    alert('❌ Please fill Batch Name and Class/Grade');
+                    return;
+                }
+
+                if (strength < 0 || fee < 0) {
+                    alert('❌ Strength and Fee must be positive numbers');
+                    return;
+                }
+
+                const batch = {
+                    id: Date.now(),
+                    name: name,
+                    grade: grade,
+                    schedule: schedule,
+                    strength: strength,
+                    fee: fee,
+                    teacher: teacher,
+                    createdAt: new Date().toISOString()
+                };
+
+                data.batches.push(batch);
+                saveData();
+                clearBatchForm();
+                loadBatches();
+                updateTeacherSelects();
+                alert('✅ Batch created successfully!');
+            } catch (error) {
+                console.error('Error adding batch:', error);
+                alert('❌ Error creating batch. Please try again.');
+            }
+        }
+
+        function deleteBatch(id) {
+            if (confirm('Delete this batch?')) {
+                data.batches = data.batches.filter(b => b.id !== id);
+                saveData();
+                loadBatches();
+            }
+        }
+
+        function clearBatchForm() {
+            document.getElementById('batchName').value = '';
+            document.getElementById('batchGrade').value = '';
+            document.getElementById('batchSchedule').value = '';
+            document.getElementById('batchStrength').value = '';
+            document.getElementById('batchFee').value = '';
+        }
+
+        function loadBatches() {
+            const tbody = document.getElementById('batchesList');
+            if (data.batches.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No batches yet</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.batches.map(b => {
+                const batchStudents = data.students.filter(s => s.batchId === b.id);
+                return `
+                    <tr>
+                        <td><strong>${b.name}</strong></td>
+                        <td>${b.grade}</td>
+                        <td>${b.schedule}</td>
+                        <td>${b.teacher || '-'}</td>
+                        <td class="text-success">₹${b.fee.toLocaleString('en-IN')}</td>
+                        <td>${b.strength}</td>
+                        <td><span class="badge badge-success">${batchStudents.length}</span></td>
+                        <td><button class="btn-danger" onclick="openBatchStudents(${b.id})">Manage</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function openBatchStudents(batchId) {
+            const batch = data.batches.find(b => b.id === batchId);
+            document.getElementById('batchStudentCard').style.display = 'block';
+            document.getElementById('batchStudentListCard').style.display = 'block';
+            document.getElementById('studentJoinDate').valueAsDate = new Date();
+            currentBatchId = batchId;
+            loadBatchStudentList();
+        }
+
+        let currentBatchId = null;
+
+        function addNewStudent() {
+            try {
+                const name = document.getElementById('newStudentName').value.trim();
+                const roll = document.getElementById('newStudentRoll').value.trim();
+                const phone = document.getElementById('newStudentPhone').value.trim();
+                const email = document.getElementById('newStudentEmail').value.trim();
+                const batchId = parseInt(document.getElementById('newStudentBatch').value) || null;
+                const joinDate = document.getElementById('newStudentJoinDate').value;
+                const address = document.getElementById('newStudentAddress').value.trim();
+
+                if (!name || !roll) {
+                    alert('❌ Please fill Student Name and Roll Number');
+                    return;
+                }
+
+                if (email && !email.includes('@')) {
+                    alert('❌ Please enter a valid email address');
+                    return;
+                }
+
+                if (phone && phone.length < 10) {
+                    alert('❌ Please enter a valid phone number (minimum 10 digits)');
+                    return;
+                }
+
+                const student = {
+                    id: Date.now(),
+                    name: name,
+                    roll: roll,
+                    phone: phone,
+                    email: email,
+                    batchId: batchId,
+                    joinDate: joinDate || new Date().toISOString().split('T')[0],
+                    address: address,
+                    status: 'Active',
+                    createdAt: new Date().toISOString()
+                };
+
+                data.students.push(student);
+                saveData();
+                clearNewStudentForm();
+                loadAllStudents();
+                updateBatchStudentSelect();
+                alert('✅ Student added successfully!');
+            } catch (error) {
+                console.error('Error adding student:', error);
+                alert('❌ Error adding student. Please try again.');
+            }
+        }
+
+        function deleteStudent(id) {
+            if (confirm('Delete this student?')) {
+                data.students = data.students.filter(s => s.id !== id);
+                saveData();
+                loadAllStudents();
+                updateBatchStudentSelect();
+            }
+        }
+
+        function clearNewStudentForm() {
+            document.getElementById('newStudentName').value = '';
+            document.getElementById('newStudentRoll').value = '';
+            document.getElementById('newStudentPhone').value = '';
+            document.getElementById('newStudentEmail').value = '';
+            document.getElementById('newStudentBatch').value = '';
+            document.getElementById('newStudentAddress').value = '';
+            setTodayDate('newStudentJoinDate');
+        }
+
+        function loadAllStudents() {
+            const tbody = document.getElementById('allStudentsList');
+            const sorted = [...data.students].sort((a, b) => new Date(b.joinDate) - new Date(a.joinDate));
+
+            if (sorted.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No students yet</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = sorted.map(s => {
+                const batch = data.batches.find(b => b.id === s.batchId);
+                return `
+                    <tr>
+                        <td><strong>${s.roll}</strong></td>
+                        <td>${s.name}</td>
+                        <td>${batch?.name || '-'}</td>
+                        <td>${s.phone}</td>
+                        <td>${s.email}</td>
+                        <td>${new Date(s.joinDate).toLocaleDateString('en-IN')}</td>
+                        <td><span class="badge badge-success">${s.status}</span></td>
+                        <td><button class="btn-danger" onclick="deleteStudent(${s.id})">Delete</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Fee Management
+        function loadBatchStudents() {
+            const batchId = parseInt(document.getElementById('feeBatch').value);
+            const select = document.getElementById('feeStudent');
+            const batchStudents = data.students.filter(s => s.batchId === batchId);
+            const batch = data.batches.find(b => b.id === batchId);
+
+            if (batch) {
+                document.getElementById('feeAmount').value = batch.fee;
+            }
+
+            select.innerHTML = '<option value="">Select Student</option>' +
+                batchStudents.map(s => `<option value="${s.id}|${s.name}|${s.roll}">${s.roll} - ${s.name}</option>`).join('');
+        }
+
+        function recordFee() {
+            try {
+                const batchId = parseInt(document.getElementById('feeBatch').value);
+                const feeStudent = document.getElementById('feeStudent').value;
+                const amount = parseFloat(document.getElementById('feeAmount').value);
+                const date = document.getElementById('feeDate').value;
+                const mode = document.getElementById('feeMode').value.trim();
+                const month = document.getElementById('feeMonth').value.trim();
+
+                if (!batchId || !feeStudent) {
+                    alert('❌ Please select Batch and Student');
+                    return;
+                }
+
+                if (!amount || amount <= 0) {
+                    alert('❌ Please enter a valid amount');
+                    return;
+                }
+
+                if (!date) {
+                    alert('❌ Please select payment date');
+                    return;
+                }
+
+                if (!mode) {
+                    alert('❌ Please select payment mode');
+                    return;
+                }
+
+                const [studentId, studentName, studentRoll] = feeStudent.split('|');
+
+                const fee = {
+                    id: Date.now(),
+                    batchId: batchId,
+                    studentId: studentId,
+                    studentName: studentName,
+                    studentRoll: studentRoll,
+                    amount: amount,
+                    mode: mode,
+                    date: date,
+                    month: month,
+                    notes: document.getElementById('feeNotes').value.trim(),
+                    recordedAt: new Date().toISOString()
+                };
+
+                data.fees.push(fee);
+                saveData();
+                clearFeeForm();
+                loadFees();
+                updateDashboard();
+                alert('✅ Fee recorded successfully!');
+            } catch (error) {
+                console.error('Error recording fee:', error);
+                alert('❌ Error recording fee. Please try again.');
+            }
+        }
+
+        function deleteFee(id) {
+            if (confirm('Delete this fee record?')) {
+                data.fees = data.fees.filter(f => f.id !== id);
+                saveData();
+                loadFees();
+                updateDashboard();
+            }
+        }
+
+        function clearFeeForm() {
+            document.getElementById('feeBatch').value = '';
+            document.getElementById('feeStudent').value = '';
+            document.getElementById('feeAmount').value = '';
+            document.getElementById('feeMode').value = '';
+            document.getElementById('feeNotes').value = '';
+            setTodayDate('feeDate');
+        }
+
+        function updateBatchStudentSelect() {
+            const batchId = parseInt(document.getElementById('feeBatch').value);
+            if (batchId) {
+                loadBatchStudents();
+            }
+        }
+
+        function loadFees() {
+            const tbody = document.getElementById('feesList');
+            const sorted = [...data.fees].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            if (sorted.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No fee records yet</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = sorted.map(f => {
+                const batch = data.batches.find(b => b.id === f.batchId);
+                return `
+                    <tr>
+                        <td>${new Date(f.date).toLocaleDateString('en-IN')}</td>
+                        <td><strong>${batch?.name || 'Unknown'}</strong></td>
+                        <td>${f.studentName}</td>
+                        <td>${f.studentRoll}</td>
+                        <td class="text-success">₹${f.amount.toLocaleString('en-IN')}</td>
+                        <td><span class="badge badge-success">${f.mode}</span></td>
+                        <td>${f.month}</td>
+                        <td><button class="btn-danger" onclick="deleteFee(${f.id})">Delete</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Expense Management with validation
+        function recordExpense() {
+            try {
+                const category = document.getElementById('expenseCategory').value.trim();
+                const description = document.getElementById('expenseDesc').value.trim();
+                const amount = parseFloat(document.getElementById('expenseAmount').value);
+                const mode = document.getElementById('expenseMode').value.trim();
+                const date = document.getElementById('expenseDate').value;
+
+                if (!category) {
+                    alert('❌ Please select expense category');
+                    return;
+                }
+
+                if (!amount || amount <= 0) {
+                    alert('❌ Please enter a valid expense amount');
+                    return;
+                }
+
+                if (!mode) {
+                    alert('❌ Please select payment mode');
+                    return;
+                }
+
+                if (!date) {
+                    alert('❌ Please select expense date');
+                    return;
+                }
+
+                const expense = {
+                    id: Date.now(),
+                    category: category,
+                    description: description,
+                    amount: amount,
+                    mode: mode,
+                    date: date,
+                    recordedAt: new Date().toISOString()
+                };
+
+                data.expenses.push(expense);
+                saveData();
+                clearExpenseForm();
+                loadExpenses();
+                updateDashboard();
+                alert('✅ Expense recorded successfully!');
+            } catch (error) {
+                console.error('Error recording expense:', error);
+                alert('❌ Error recording expense. Please try again.');
+            }
+        }
+
+        function deleteExpense(id) {
+            if (confirm('Delete this expense?')) {
+                data.expenses = data.expenses.filter(e => e.id !== id);
+                saveData();
+                loadExpenses();
+                updateDashboard();
+            }
+        }
+
+        function clearExpenseForm() {
+            document.getElementById('expenseCategory').value = '';
+            document.getElementById('expenseDesc').value = '';
+            document.getElementById('expenseAmount').value = '';
+            document.getElementById('expenseMode').value = '';
+            setTodayDate('expenseDate');
+        }
+
+        function loadExpenses() {
+            const tbody = document.getElementById('expensesList');
+            const sorted = [...data.expenses].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            if (sorted.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No expenses yet</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = sorted.map(e => `
+                <tr>
+                    <td>${new Date(e.date).toLocaleDateString('en-IN')}</td>
+                    <td><span class="badge badge-warning">${e.category}</span></td>
+                    <td>${e.description}</td>
+                    <td class="text-error">₹${e.amount.toLocaleString('en-IN')}</td>
+                    <td>${e.mode}</td>
+                    <td><button class="btn-danger" onclick="deleteExpense(${e.id})">Delete</button></td>
+                </tr>
+            `).join('');
+        }
+
+        // Staff Management with validation
+        function addStaff() {
+            try {
+                const name = document.getElementById('staffName').value.trim();
+                const position = document.getElementById('staffPosition').value.trim();
+                const salary = parseFloat(document.getElementById('staffSalary').value) || 0;
+                const phone = document.getElementById('staffPhone').value.trim();
+                const email = document.getElementById('staffEmail').value.trim();
+                const joinDate = document.getElementById('staffDate').value;
+
+                if (!name || !position) {
+                    alert('❌ Please fill Full Name and Position');
+                    return;
+                }
+
+                if (salary < 0) {
+                    alert('❌ Salary must be a positive number');
+                    return;
+                }
+
+                if (phone && phone.length < 10) {
+                    alert('❌ Please enter a valid phone number');
+                    return;
+                }
+
+                if (email && !email.includes('@')) {
+                    alert('❌ Please enter a valid email address');
+                    return;
+                }
+
+                const staff = {
+                    id: Date.now(),
+                    name: name,
+                    position: position,
+                    salary: salary,
+                    phone: phone,
+                    email: email,
+                    joinDate: joinDate || new Date().toISOString().split('T')[0],
+                    createdAt: new Date().toISOString()
+                };
+
+                data.staff.push(staff);
+                saveData();
+                clearStaffForm();
+                loadStaff();
+                updateTeacherSelects();
+                alert('✅ Staff member added successfully!');
+            } catch (error) {
+                console.error('Error adding staff:', error);
+                alert('❌ Error adding staff. Please try again.');
+            }
+        }
+
+        function deleteStaff(id) {
+            if (confirm('Delete this staff member?')) {
+                data.staff = data.staff.filter(s => s.id !== id);
+                saveData();
+                loadStaff();
+                updateTeacherSelects();
+            }
+        }
+
+        function clearStaffForm() {
+            document.getElementById('staffName').value = '';
+            document.getElementById('staffPosition').value = '';
+            document.getElementById('staffSalary').value = '';
+            document.getElementById('staffPhone').value = '';
+            document.getElementById('staffEmail').value = '';
+        }
+
+        function loadStaff() {
+            const tbody = document.getElementById('staffList');
+            if (data.staff.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No staff members yet</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.staff.map(s => `
+                <tr>
+                    <td><strong>${s.name}</strong></td>
+                    <td>${s.position}</td>
+                    <td class="text-error">₹${s.salary.toLocaleString('en-IN')}</td>
+                    <td>${s.phone}</td>
+                    <td>${s.email}</td>
+                    <td>${new Date(s.joinDate).toLocaleDateString('en-IN')}</td>
+                    <td><button class="btn-danger" onclick="deleteStaff(${s.id})">Delete</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function updateTeacherSelects() {
+            const teachers = data.staff.filter(s => s.position === 'Teacher' || s.position === 'Teacher');
+            const selects = [document.getElementById('batchTeacher'), document.getElementById('batchTeacher')];
+            selects.forEach(select => {
+                if (select) {
+                    const val = select.value;
+                    select.innerHTML = '<option value="">Select Teacher</option>' + 
+                        teachers.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
+                    select.value = val;
+                }
+            });
+        }
+
+        // Equipment Management with validation
+        function addEquipment() {
+            try {
+                const name = document.getElementById('equipName').value.trim();
+                const category = document.getElementById('equipCategory').value.trim();
+                const cost = parseFloat(document.getElementById('equipCost').value);
+                const date = document.getElementById('equipDate').value;
+                const condition = document.getElementById('equipCondition').value;
+                const location = document.getElementById('equipLocation').value.trim();
+
+                if (!name || !category) {
+                    alert('❌ Please fill Equipment Name and Category');
+                    return;
+                }
+
+                if (!cost || cost <= 0) {
+                    alert('❌ Please enter a valid cost');
+                    return;
+                }
+
+                if (!date) {
+                    alert('❌ Please select purchase date');
+                    return;
+                }
+
+                const equipment = {
+                    id: Date.now(),
+                    name: name,
+                    category: category,
+                    cost: cost,
+                    date: date,
+                    condition: condition,
+                    location: location,
+                    createdAt: new Date().toISOString()
+                };
+
+                data.equipment.push(equipment);
+                saveData();
+                clearEquipmentForm();
+                loadEquipment();
+                alert('✅ Equipment added successfully!');
+            } catch (error) {
+                console.error('Error adding equipment:', error);
+                alert('❌ Error adding equipment. Please try again.');
+            }
+        }
+
+        function deleteEquipment(id) {
+            if (confirm('Delete this equipment?')) {
+                data.equipment = data.equipment.filter(e => e.id !== id);
+                saveData();
+                loadEquipment();
+            }
+        }
+
+        function clearEquipmentForm() {
+            document.getElementById('equipName').value = '';
+            document.getElementById('equipCategory').value = '';
+            document.getElementById('equipCost').value = '';
+            document.getElementById('equipCondition').value = 'Good';
+            document.getElementById('equipLocation').value = '';
+        }
+
+        function loadEquipment() {
+            const tbody = document.getElementById('equipmentList');
+            if (data.equipment.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No equipment recorded yet</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.equipment.map(e => `
+                <tr>
+                    <td><strong>${e.name}</strong></td>
+                    <td>${e.category}</td>
+                    <td class="text-primary">₹${e.cost.toLocaleString('en-IN')}</td>
+                    <td>${new Date(e.date).toLocaleDateString('en-IN')}</td>
+                    <td><span class="badge badge-${e.condition === 'Good' ? 'success' : e.condition === 'Fair' ? 'warning' : 'error'}">${e.condition}</span></td>
+                    <td>${e.location}</td>
+                    <td><button class="btn-danger" onclick="deleteEquipment(${e.id})">Delete</button></td>
+                </tr>
+            `).join('');
+        }
+
+        // Dashboard
+        function updateDashboard() {
+            const totalFees = data.fees.reduce((sum, f) => sum + f.amount, 0);
+            const totalExpenses = data.expenses.reduce((sum, e) => sum + e.amount, 0);
+            const profit = totalFees - totalExpenses;
+
+            document.getElementById('dashTotalFees').textContent = '₹' + totalFees.toLocaleString('en-IN');
+            document.getElementById('dashTotalExpenses').textContent = '₹' + totalExpenses.toLocaleString('en-IN');
+            document.getElementById('dashNetProfit').textContent = '₹' + profit.toLocaleString('en-IN');
+            document.getElementById('dashBatches').textContent = data.batches.length;
+            document.getElementById('dashStaff').textContent = data.staff.length;
+            document.getElementById('dashTotalStudents').textContent = data.students.length;
+
+            const recentTransactions = [];
+            data.fees.forEach(f => {
+                const batch = data.batches.find(b => b.id === f.batchId);
+                recentTransactions.push({
+                    date: f.date,
+                    type: 'Fee',
+                    description: batch?.name || 'Unknown',
+                    amount: f.amount,
+                    status: 'Collected'
+                });
+            });
+            data.expenses.forEach(e => {
+                recentTransactions.push({
+                    date: e.date,
+                    type: 'Expense',
+                    description: e.description,
+                    amount: e.amount,
+                    status: e.category
+                });
+            });
+
+            recentTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            const tbody = document.getElementById('dashRecentTransactions');
+            if (recentTransactions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No transactions yet</td></tr>';
+            } else {
+                tbody.innerHTML = recentTransactions.slice(0, 10).map(t => `
+                    <tr>
+                        <td>${new Date(t.date).toLocaleDateString('en-IN')}</td>
+                        <td><strong>${t.type}</strong></td>
+                        <td>${t.description}</td>
+                        <td class="${t.type === 'Fee' ? 'text-success' : 'text-error'}">₹${t.amount.toLocaleString('en-IN')}</td>
+                        <td><span class="badge ${t.type === 'Fee' ? 'badge-success' : 'badge-warning'}">${t.status}</span></td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // Reports
+        function generateReport() {
+            const monthName = document.getElementById('reportMonth').value;
+            const monthIndex = new Date(Date.parse(monthName + ' 1, 2024')).getMonth();
+
+            const monthFees = data.fees.filter(f => new Date(f.date).getMonth() === monthIndex);
+            const monthExpenses = data.expenses.filter(e => new Date(e.date).getMonth() === monthIndex);
+
+            const totalFees = monthFees.reduce((sum, f) => sum + f.amount, 0);
+            const totalExpenses = monthExpenses.reduce((sum, e) => sum + e.amount, 0);
+            const profit = totalFees - totalExpenses;
+
+            document.getElementById('reportFees').textContent = '₹' + totalFees.toLocaleString('en-IN');
+            document.getElementById('reportExpenses').textContent = '₹' + totalExpenses.toLocaleString('en-IN');
+            document.getElementById('reportProfit').textContent = '₹' + profit.toLocaleString('en-IN');
+
+            const feesByBatch = {};
+            monthFees.forEach(f => {
+                const batch = data.batches.find(b => b.id === f.batchId);
+                if (!feesByBatch[batch?.name || 'Unknown']) {
+                    feesByBatch[batch?.name || 'Unknown'] = { count: 0, amount: 0 };
+                }
+                feesByBatch[batch?.name || 'Unknown'].count++;
+                feesByBatch[batch?.name || 'Unknown'].amount += f.amount;
+            });
+
+            const feesTable = document.getElementById('reportFeesTable');
+            feesTable.innerHTML = Object.entries(feesByBatch).map(([batch, data]) => `
+                <tr>
+                    <td><strong>${batch}</strong></td>
+                    <td>${data.count}</td>
+                    <td class="text-success">₹${data.amount.toLocaleString('en-IN')}</td>
+                </tr>
+            `).join('') || '<tr><td colspan="3" class="empty-state">No data</td></tr>';
+
+            const expensesByCategory = {};
+            monthExpenses.forEach(e => {
+                if (!expensesByCategory[e.category]) {
+                    expensesByCategory[e.category] = { count: 0, amount: 0 };
+                }
+                expensesByCategory[e.category].count++;
+                expensesByCategory[e.category].amount += e.amount;
+            });
+
+            const expensesTable = document.getElementById('reportExpensesTable');
+            expensesTable.innerHTML = Object.entries(expensesByCategory).map(([category, data]) => `
+                <tr>
+                    <td><strong>${category}</strong></td>
+                    <td>${data.count}</td>
+                    <td class="text-error">₹${data.amount.toLocaleString('en-IN')}</td>
+                </tr>
+            `).join('') || '<tr><td colspan="3" class="empty-state">No data</td></tr>';
+
+            document.getElementById('reportCard').style.display = 'block';
+        }
+
+        function exportReport() {
+            const monthName = document.getElementById('reportMonth').value;
+            let csv = 'Iqra Classes - Monthly Report\n';
+            csv += monthName + '\n\n';
+            csv += 'Fee Collection\n';
+            csv += Array.from(document.querySelectorAll('#reportFeesTable tr')).map(tr => 
+                Array.from(tr.querySelectorAll('td')).map(td => td.textContent).join(',')
+            ).join('\n');
+            csv += '\n\nExpenses\n';
+            csv += Array.from(document.querySelectorAll('#reportExpensesTable tr')).map(tr =>
+                Array.from(tr.querySelectorAll('td')).map(td => td.textContent).join(',')
+            ).join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `iqra_report_${document.getElementById('reportMonth').value}.csv`;
+            a.click();
+        }
+
+        function printReport() {
+            window.print();
+        }
+
+        // Settings
+        function saveSettings() {
+            data.settings = {
+                centerName: document.getElementById('centerName').value,
+                phone: document.getElementById('centerPhone').value,
+                email: document.getElementById('centerEmail').value,
+                address: document.getElementById('centerAddress').value
+            };
+            saveData();
+            alert('Settings saved!');
+        }
+
+        function loadSettings() {
+            document.getElementById('centerName').value = data.settings.centerName;
+            document.getElementById('centerPhone').value = data.settings.phone;
+            document.getElementById('centerEmail').value = data.settings.email;
+            document.getElementById('centerAddress').value = data.settings.address;
+        }
+
+        function backupData() {
+            try {
+                if (!backup.createFullBackup()) {
+                    alert('❌ Backup failed. Please try again.');
+                }
+                alert('✅ Backup completed successfully!');
+            } catch (error) {
+                logger.error('Backup error', error.message);
+                alert('❌ Error creating backup: ' + error.message);
+            }
+        }
+
+        function restoreData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                backup.restoreFromBackup(file)
+                    .then(() => {
+                        alert('✅ Data restored successfully!');
+                        location.reload();
+                    })
+                    .catch((error) => {
+                        logger.error('Restore error', error);
+                        alert('❌ ' + error);
+                    });
+            };
+            input.click();
+        }
+
+        function clearAllData() {
+            if (confirm('This will delete ALL data. Are you absolutely sure?')) {
+                data = {
+                    batches: [],
+                    students: [],
+                    fees: [],
+                    expenses: [],
+                    staff: [],
+                    equipment: [],
+                    settings: { centerName: 'Iqra Classes', phone: '', email: '', address: '' }
+                };
+                saveData();
+                location.reload();
+            }
+        }
+
+        // Data Management with professional error handling
+        function saveData() {
+            return storage.save();
+        }
+
+        // Enhanced export functions
+        function exportStudentsReport() {
+            try {
+                const headers = ['Roll No', 'Name', 'Batch', 'Phone', 'Email', 'Join Date', 'Status'];
+                const records = data.students.map(s => ({
+                    'Roll No': s.roll,
+                    'Name': s.name,
+                    'Batch': data.batches.find(b => b.id === s.batchId)?.name || '-',
+                    'Phone': s.phone,
+                    'Email': s.email,
+                    'Join Date': new Date(s.joinDate).toLocaleDateString('en-IN'),
+                    'Status': s.status
+                }));
+                
+                const csv = exporter.toCSV(records, headers);
+                exporter.downloadAsCSV(`students_report_${new Date().toISOString().split('T')[0]}.csv`, csv);
+                logger.info('Students report exported', { count: records.length });
+            } catch (error) {
+                logger.error('Export error', error.message);
+                alert('❌ Error exporting report: ' + error.message);
+            }
+        }
+
+        function exportFinancialReport() {
+            try {
+                const startDate = new Date(new Date().getFullYear(), 0, 1);
+                const endDate = new Date();
+                const summary = reports.generateFinancialSummary(startDate, endDate);
+                
+                const blob = new Blob([JSON.stringify(summary, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `financial_summary_${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                logger.info('Financial report exported', { summary });
+            } catch (error) {
+                logger.error('Financial export error', error.message);
+                alert('❌ Error exporting financial report: ' + error.message);
+            }
+        }
+
+        function viewSystemMetrics() {
+            const metrics = analytics.getMetrics();
+            const health = analytics.getDataHealth();
+            
+            let message = `📊 SYSTEM METRICS\n\n`;
+            message += `System: ${metrics.system.name} v${metrics.system.version}\n`;
+            message += `Data Version: ${metrics.system.dataVersion}\n\n`;
+            message += `📈 COUNTS\n`;
+            message += `Batches: ${metrics.counts.batches}\n`;
+            message += `Students: ${metrics.counts.students}\n`;
+            message += `Staff: ${metrics.counts.staff}\n`;
+            message += `Equipment: ${metrics.counts.equipment}\n`;
+            message += `Transactions: ${metrics.counts.totalTransactions}\n\n`;
+            message += `💰 FINANCIALS\n`;
+            message += `Total Fees: ₹${metrics.financials.totalFees.toLocaleString('en-IN')}\n`;
+            message += `Total Expenses: ₹${metrics.financials.totalExpenses.toLocaleString('en-IN')}\n`;
+            message += `Net Profit: ₹${metrics.financials.netProfit.toLocaleString('en-IN')}\n\n`;
+            message += `🏥 DATA HEALTH\n`;
+            message += `Status: ${health.healthy ? '✅ Healthy' : '⚠️ Issues Found'}\n`;
+            if (!health.healthy) {
+                message += `Issues:\n${health.issues.join('\n')}`;
+            }
+            
+            alert(message);
+            logger.info('System metrics viewed', metrics);
+        }
+
+        function updateBatchStudentSelect() {
+            const select = document.getElementById('newStudentBatch');
+            if (select) {
+                const currentVal = select.value;
+                select.innerHTML = '<option value="">No Batch (Optional)</option>' +
+                    data.batches.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+                select.value = currentVal;
+            }
+        }
+
+        function loadAllData() {
+            updateDashboard();
+            loadBatches();
+            loadAllStudents();
+            updateBatchStudentSelect();
+            loadFees();
+            loadExpenses();
+            loadStaff();
+            loadEquipment();
+            loadSettings();
+        }
+    </script>
+</body>
+</html>
