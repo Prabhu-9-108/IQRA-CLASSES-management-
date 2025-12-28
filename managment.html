@@ -1,1 +1,1808 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iqra Complete Management</title>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --color-primary: #2180a5;
+            --color-primary-hover: #1c6a8b;
+            --color-primary-active: #1a4a71;
+            --color-success: #2fa76f;
+            --color-warning: #e69b73;
+            --color-error: #d71d2f;
+            --color-text: #134252;
+            --color-text-secondary: #627678;
+            --color-bg: #f3f4f6;
+            --color-surface: #ffffff;
+            --color-border: #e5e7eb;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --radius: 12px;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+        }
+
+        /* --- Layout & Sidebar --- */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: var(--sidebar-width);
+            background: var(--color-surface);
+            border-right: 1px solid var(--color-border);
+            overflow-y: auto;
+            padding: var(--spacing-lg);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .brand i {
+            font-size: 24px;
+            color: var(--color-primary);
+        }
+
+        .brand h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            border-radius: var(--radius);
+            transition: all 0.2s;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            gap: 12px;
+        }
+
+        .nav-btn i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-btn:hover {
+            background-color: #f0f9ff;
+            color: var(--color-primary);
+        }
+
+        .nav-btn.active {
+            background-color: var(--color-primary);
+            color: white;
+            box-shadow: 0 4px 6px rgba(33, 128, 165, 0.2);
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: var(--spacing-lg);
+            width: calc(100% - var(--sidebar-width));
+            transition: margin-left 0.3s ease;
+        }
+
+        /* --- Header & Mobile Toggle --- */
+        .mobile-header {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--color-primary);
+            padding: 15px var(--spacing-md);
+            color: white;
+            margin: -24px -24px 24px -24px; /* Counteract padding */
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        /* --- Cards & Dashboard --- */
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .stat-card {
+            background: var(--color-surface);
+            padding: 20px;
+            border-radius: var(--radius);
+            border: 1px solid var(--color-border);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .stat-card h3 {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .stat-card .amount {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--color-text);
+        }
+
+        .stat-card.income .amount { color: var(--color-success); }
+        .stat-card.expense .amount { color: var(--color-error); }
+        .stat-card.profit .amount { color: var(--color-primary); }
+        .stat-card.warning .amount { color: var(--color-warning); }
+
+        .card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius);
+            padding: var(--spacing-lg);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: var(--color-text);
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* --- Forms --- */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--color-text-secondary);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s;
+            background-color: #fff;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(33, 128, 165, 0.1);
+        }
+
+        /* --- Buttons --- */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background-color: #fff0f0;
+            color: var(--color-error);
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-danger:hover {
+            background-color: var(--color-error);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #f3f4f6;
+            color: var(--color-text);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e5e7eb;
+        }
+
+        /* --- Tables --- */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--color-border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px; /* Prevent squishing */
+        }
+
+        th {
+            background-color: #f9fafb;
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            border-bottom: 1px solid var(--color-border);
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--color-border);
+            font-size: 14px;
+            color: var(--color-text);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background-color: #f9fafb;
+        }
+
+        /* --- Badges & Utilities --- */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-success { background-color: #def7ec; color: #03543f; }
+        .badge-warning { background-color: #fdf6b2; color: #723b13; }
+        .badge-error { background-color: #fde8e8; color: #9b1c1c; }
+        .badge-info { background-color: #e1effe; color: #1e429f; }
+
+        .text-success { color: var(--color-success); font-weight: 600; }
+        .text-error { color: var(--color-error); font-weight: 600; }
+        .text-primary { color: var(--color-primary); font-weight: 600; }
+
+        .empty-state {
+            text-align: center;
+            color: var(--color-text-secondary);
+            padding: 40px;
+            font-size: 14px;
+            background: #f9fafb;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        /* --- Mobile Responsiveness --- */
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+                box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: var(--spacing-md);
+            }
+
+            .mobile-header {
+                display: flex;
+            }
+
+            .overlay.active {
+                display: block;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-primary {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Mobile Overlay -->
+    <div class="overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar" id="sidebar">
+            <div class="brand">
+                <i class="fas fa-chart-line"></i>
+                <h2>Iqra Manager</h2>
+            </div>
+            <button class="nav-btn active" onclick="showSection('dashboard')"><i class="fas fa-home"></i> Dashboard</button>
+            <button class="nav-btn" onclick="showSection('batches')"><i class="fas fa-book"></i> Batches</button>
+            <button class="nav-btn" onclick="showSection('students')"><i class="fas fa-user-graduate"></i> Students</button>
+            <button class="nav-btn" onclick="showSection('fees')"><i class="fas fa-wallet"></i> Fee Register</button>
+            <button class="nav-btn" onclick="showSection('expenses')"><i class="fas fa-receipt"></i> Expenses</button>
+            <button class="nav-btn" onclick="showSection('staff')"><i class="fas fa-chalkboard-teacher"></i> Staff</button>
+            <button class="nav-btn" onclick="showSection('equipment')"><i class="fas fa-laptop"></i> Equipment</button>
+            <button class="nav-btn" onclick="showSection('reports')"><i class="fas fa-chart-pie"></i> Reports</button>
+            <button class="nav-btn" onclick="showSection('settings')"><i class="fas fa-cog"></i> Settings</button>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <h2>Iqra Manager</h2>
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="section active">
+                <div class="card">
+                    <h2><i class="fas fa-tachometer-alt"></i> Dashboard Overview</h2>
+                    <div class="dashboard-grid">
+                        <div class="stat-card income">
+                            <h3>Total Fee Collection</h3>
+                            <div class="amount" id="dashTotalFees">₹0</div>
+                        </div>
+                        <div class="stat-card expense">
+                            <h3>Total Expenses</h3>
+                            <div class="amount" id="dashTotalExpenses">₹0</div>
+                        </div>
+                        <div class="stat-card profit">
+                            <h3>Net Profit</h3>
+                            <div class="amount" id="dashNetProfit">₹0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Active Batches</h3>
+                            <div class="amount" id="dashBatches">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Staff Members</h3>
+                            <div class="amount" id="dashStaff">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Total Students</h3>
+                            <div class="amount" id="dashTotalStudents">0</div>
+                        </div>
+                        <div class="stat-card warning">
+                            <h3>Transactions Today</h3>
+                            <div class="amount text-warning" id="dashTransToday">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><i class="fas fa-history"></i> Recent Transactions</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashRecentTransactions">
+                                <tr><td colspan="5" class="empty-state">No transactions yet</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Batches Section -->
+            <section id="batches" class="section">
+                <div class="card">
+                    <h2><i class="fas fa-plus-circle"></i> Create New Batch</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Batch Name</label>
+                            <input type="text" id="batchName" placeholder="e.g., 10th Science" />
+                        </div>
+                        <div class="form-group">
+                            <label>Class/Grade</label>
+                            <input type="text" id="batchGrade" placeholder="e.g., 10" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Schedule</label>
+                            <input type="text" id="batchSchedule" placeholder="e.g., Mon-Fri 4-5 PM" />
+                        </div>
+                        <div class="form-group">
+                            <label>Max Strength</label>
+                            <input type="number" id="batchStrength" placeholder="0" min="0" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Monthly Fee (₹)</label>
+                            <input type="number" id="batchFee" placeholder="0" min="0" step="100" />
+                        </div>
+                        <div class="form-group">
+                            <label>Assigned Teacher</label>
+                            <select id="batchTeacher"></select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="addBatch()"><i class="fas fa-save"></i> Create Batch</button>
+                </div>
+
+                <div class="card">
+                    <h2><i class="fas fa-list"></i> Active Batches</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Batch Name</th>
+                                    <th>Class</th>
+                                    <th>Schedule</th>
+                                    <th>Teacher</th>
+                                    <th>Fee</th>
+                                    <th>Stats</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="batchesList">
+                                <tr><td colspan="7" class="empty-state">No batches yet</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Hidden Section for Batch Details -->
+                <div class="card" id="batchStudentCard" style="display:none; border-left: 5px solid var(--color-primary);">
+                    <h2><i class="fas fa-users-cog"></i> Batch Details</h2>
+                    <h3 id="selectedBatchTitle" style="margin-bottom: 15px; color: var(--color-text-secondary);">Select a batch to view details</h3>
+                    <div class="table-container" id="batchStudentListCard">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Roll No</th>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="batchSpecificStudentList">
+                                <tr><td colspan="4" class="empty-state">No students in this batch</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top: 15px;">
+                         <button class="btn btn-secondary" onclick="closeBatchDetails()">Close Details</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Students Section -->
+            <section id="students" class="section">
+                <div class="card">
+                    <h2><i class="fas fa-user-plus"></i> Add New Student</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Student Name</label>
+                            <input type="text" id="newStudentName" placeholder="Full Name" />
+                        </div>
+                        <div class="form-group">
+                            <label>Roll Number</label>
+                            <input type="text" id="newStudentRoll" placeholder="Unique ID/Roll" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="tel" id="newStudentPhone" placeholder="10-digit number" />
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="newStudentEmail" placeholder="email@example.com" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Assign to Batch</label>
+                            <select id="newStudentBatch"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Join Date</label>
+                            <input type="date" id="newStudentJoinDate" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <textarea id="newStudentAddress" placeholder="Full address" rows="2"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="addNewStudent()"><i class="fas fa-user-check"></i> Add Student</button>
+                </div>
+
+                <div class="card">
+                    <h2><i class="fas fa-users"></i> Student Directory</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Roll No</th>
+                                    <th>Name</th>
+                                    <th>Batch</th>
+                                    <th>Phone</th>
+                                    <th>Join Date</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="allStudentsList">
+                                <tr><td colspan="7" class="empty-state">No students yet</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Fee Register Section -->
+            <section id="fees" class="section">
+                <div class="card">
+                    <h2><i class="fas fa-hand-holding-usd"></i> Record Fee Payment</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Select Batch</label>
+                            <select id="feeBatch" onchange="loadBatchStudents()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Select Student</label>
+                            <select id="feeStudent"></select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Payment Mode</label>
+                            <select id="feeMode">
+                                <option value="">Select Mode</option>
+                                <option value="Cash">Cash</option>
+                                <option value="Online">Online / UPI</option>
+                                <option value="Bank Transfer">Bank Transfer</option>
+                                <option value="Cheque">Cheque</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Amount Collected (₹)</label>
+                            <input type="number" id="feeAmount" placeholder="0" min="0" step="100" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Payment Date</label>
+                            <input type="date" id="feeDate" />
+                        </div>
+                        <div class="form-group">
+                            <label>For Month</label>
+                            <select id="feeMonth">
+                                <option value="January">January</option>
+                                <option value="February">February</option>
+                                <option value="March">March</option>
+                                <option value="April">April</option>
+                                <option value="May">May</option>
+                                <option value="June">June</option>
+                                <option value="July">July</option>
+                                <option value="August">August</option>
+                                <option value="September">September</option>
+                                <option value="October">October</option>
+                                <option value="November">November</option>
+                                <option value="December">December</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea id="feeNotes" placeholder="Optional notes..." rows="2"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="recordFee()"><i class="fas fa-check-circle"></i> Record Payment</button>
+                </div>
+
+                <div class="card">
+                    <h2><i class="fas fa-file-invoice-dollar"></i> Fee History</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Student</th>
+                                    <th>Batch</th>
+                                    <th>Amount</th>
+                                    <th>Mode</th>
+                                    <th>Month</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="feesList">
+                                <tr><td colspan="7" class="empty-state">No fee records yet</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Expenses Section -->
+            <section id="expenses" class="section">
+                <div class="card">
+                    <h2><i class="fas fa-money-bill-wave"></i> Record Expense</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="expenseCategory">
+                                <option value="">Select Category</option>
+                                <option value="Salary">Teacher Salary</option>
+                                <option value="Rent">Rent</option>
+                                <option value="Utilities">Utilities (Electric, Water)</option>
+                                <option value="Materials">Study Materials</option>
+                                <option value="Maintenance">Maintenance</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <input type="text" id="expenseDesc" placeholder="e.g., Monthly rent" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Amount (₹)</label>
+                            <input type="number" id="expenseAmount" placeholder="0" min="0" />
+                        </div>
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="expenseDate" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Payment Mode</label>
+                        <select id="expenseMode">
+                            <option value="Cash">Cash</option>
+                            <option value="Online">Online</option>
+                            <option value="Cheque">Cheque</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="recordExpense()"><i class="fas fa-minus-circle"></i> Record Expense</button>
+                </div>
+
+                <div class="card">
+                    <h2><i class="fas fa-list-ul"></i> Expense Register</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Category</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Mode</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expensesList">
+                                <tr><td colspan="6" class="empty-state">No expenses yet</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Staff Section -->
+            <section id="staff" class="section">
+                <div class="card">
+                    <h2><i class="fas fa-user-tie"></i> Add Staff Member</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="staffName" placeholder="Name" />
+                        </div>
+                        <div class="form-group">
+                            <label>Position</label>
+                            <select id="staffPosition">
+                                <option value="">Select Position</option>
+                                <option value="Teacher">Teacher</option>
+                                <option value="Assistant">Assistant</option>
+                                <option value="Manager">Manager</option>
+                                <option value="Admin">Admin</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Monthly Salary (₹)</label>
+                            <input type="number" id="staffSalary" placeholder="0" min="0" />
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="tel" id="staffPhone" placeholder="Phone" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="staffEmail" placeholder="Email" />
+                        </div>
+                        <div class="form-group">
+                            <label>Join Date</label>
+                            <input type="date" id="staffDate" />
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="addStaff()"><i class="fas fa-user-plus"></i> Add Staff</button>
+                </div>
+
+                <div class="card">
+                    <h2><i class="fas fa-address-book"></i> Staff Directory</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Position</th>
+                                    <th>Salary</th>
+                                    <th>Phone</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="staffList">
+                                <tr><td colspan="5" class="empty-state">No staff members yet</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Equipment Section -->
+            <section id="equipment" class="section">
+                <div class="card">
+                    <h2><i class="fas fa-desktop"></i> Add Equipment</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Item Name</label>
+                            <input type="text" id="equipName" placeholder="e.g., Projector" />
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="equipCategory">
+                                <option value="Electronics">Electronics</option>
+                                <option value="Furniture">Furniture</option>
+                                <option value="Stationery">Stationery</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Cost (₹)</label>
+                            <input type="number" id="equipCost" placeholder="0" min="0" />
+                        </div>
+                        <div class="form-group">
+                            <label>Purchase Date</label>
+                            <input type="date" id="equipDate" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Condition</label>
+                            <select id="equipCondition">
+                                <option value="Good">Good</option>
+                                <option value="Fair">Fair</option>
+                                <option value="Repair">Needs Repair</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Location</label>
+                            <input type="text" id="equipLocation" placeholder="Room No / Batch" />
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="addEquipment()"><i class="fas fa-save"></i> Add Equipment</button>
+                </div>
+
+                <div class="card">
+                    <h2><i class="fas fa-boxes"></i> Inventory</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Category</th>
+                                    <th>Cost</th>
+                                    <th>Date</th>
+                                    <th>Condition</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="equipmentList">
+                                <tr><td colspan="6" class="empty-state">No equipment yet</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports" class="section">
+                <div class="card">
+                    <h2><i class="fas fa-chart-bar"></i> Monthly Reports</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Select Month</label>
+                            <select id="reportMonth">
+                                <option value="January">January</option>
+                                <option value="February">February</option>
+                                <option value="March">March</option>
+                                <option value="April">April</option>
+                                <option value="May">May</option>
+                                <option value="June">June</option>
+                                <option value="July">July</option>
+                                <option value="August">August</option>
+                                <option value="September">September</option>
+                                <option value="October">October</option>
+                                <option value="November">November</option>
+                                <option value="December">December</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <button class="btn btn-primary" onclick="generateReport()"><i class="fas fa-search"></i> Generate Report</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" id="reportCard" style="display: none;">
+                    <h2>Monthly Summary Report</h2>
+                    <div class="dashboard-grid">
+                        <div class="stat-card income">
+                            <h3>Total Fees</h3>
+                            <div class="amount" id="reportFees">₹0</div>
+                        </div>
+                        <div class="stat-card expense">
+                            <h3>Total Expenses</h3>
+                            <div class="amount" id="reportExpenses">₹0</div>
+                        </div>
+                        <div class="stat-card profit">
+                            <h3>Net Profit</h3>
+                            <div class="amount" id="reportProfit">₹0</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 24px;">
+                        <h3>Fee Collection by Batch</h3>
+                        <div class="table-container" style="margin-top: 10px;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Batch</th>
+                                        <th>Count</th>
+                                        <th>Total Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reportFeesTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 24px;">
+                        <h3>Expenses by Category</h3>
+                        <div class="table-container" style="margin-top: 10px;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Count</th>
+                                        <th>Total Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reportExpensesTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-secondary" onclick="exportReport()"><i class="fas fa-file-csv"></i> Export CSV</button>
+                        <button class="btn btn-secondary" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="section">
+                <div class="card">
+                    <h2><i class="fas fa-cogs"></i> System Settings</h2>
+                    <div class="form-group">
+                        <label>Institute Name</label>
+                        <input type="text" id="centerName" placeholder="Iqra Classes" />
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Phone</label>
+                        <input type="tel" id="centerPhone" />
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Email</label>
+                        <input type="email" id="centerEmail" />
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <textarea id="centerAddress" rows="3"></textarea>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+                        <button class="btn btn-danger" onclick="clearAllData()">Reset All Data</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><i class="fas fa-database"></i> Data Backup</h2>
+                    <p style="color: var(--color-text-secondary); margin-bottom: 15px;">
+                        Download a backup of your data to keep it safe, or restore from a previous file.
+                    </p>
+                    <div class="button-group">
+                        <button class="btn btn-secondary" onclick="backupData()"><i class="fas fa-download"></i> Backup Data</button>
+                        <button class="btn btn-secondary" onclick="restoreData()"><i class="fas fa-upload"></i> Restore Data</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // --- State Management ---
+        let data = {
+            batches: [],
+            students: [],
+            fees: [],
+            expenses: [],
+            staff: [],
+            equipment: [],
+            settings: {
+                centerName: 'Iqra Classes',
+                phone: '',
+                email: '',
+                address: ''
+            }
+        };
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            
+            // Set default dates to today
+            const today = new Date().toISOString().split('T')[0];
+            const dateInputs = ['feeDate', 'expenseDate', 'staffDate', 'equipDate', 'newStudentJoinDate'];
+            dateInputs.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.value = today;
+            });
+
+            // Set default month for reports
+            const monthSelect = document.getElementById('reportMonth');
+            if(monthSelect) {
+                const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                monthSelect.value = monthNames[new Date().getMonth()];
+            }
+
+            updateDashboard();
+            updateAllSelects();
+        });
+
+        // --- Navigation & UI ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            // Show target section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update Navigation
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            // Find button calling this function and make active, or find by onclick attribute
+            const navBtns = document.querySelectorAll('.nav-btn');
+            navBtns.forEach(btn => {
+                if(btn.getAttribute('onclick').includes(sectionId)) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Mobile: Close sidebar after selection
+            if(window.innerWidth <= 768) {
+                toggleSidebar();
+            }
+
+            // Refresh data views
+            refreshViews();
+        }
+
+        function refreshViews() {
+            updateDashboard();
+            renderBatches();
+            renderStudents();
+            renderFees();
+            renderExpenses();
+            renderStaff();
+            renderEquipment();
+        }
+
+        // --- Data Persistence ---
+        function loadData() {
+            const stored = localStorage.getItem('iqraData');
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    data = { ...data, ...parsed }; // Merge to ensure structure
+                    
+                    // Restore settings
+                    if(data.settings) {
+                        document.getElementById('centerName').value = data.settings.centerName || '';
+                        document.getElementById('centerPhone').value = data.settings.phone || '';
+                        document.getElementById('centerEmail').value = data.settings.email || '';
+                        document.getElementById('centerAddress').value = data.settings.address || '';
+                    }
+                } catch (e) {
+                    console.error("Data load error", e);
+                }
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('iqraData', JSON.stringify(data));
+        }
+
+        // --- Dashboard Logic ---
+        function updateDashboard() {
+            const totalFees = data.fees.reduce((sum, f) => sum + (parseFloat(f.amount)||0), 0);
+            const totalExpenses = data.expenses.reduce((sum, e) => sum + (parseFloat(e.amount)||0), 0);
+            
+            document.getElementById('dashTotalFees').innerText = '₹' + totalFees.toLocaleString();
+            document.getElementById('dashTotalExpenses').innerText = '₹' + totalExpenses.toLocaleString();
+            document.getElementById('dashNetProfit').innerText = '₹' + (totalFees - totalExpenses).toLocaleString();
+            
+            document.getElementById('dashBatches').innerText = data.batches.length;
+            document.getElementById('dashStaff').innerText = data.staff.length;
+            document.getElementById('dashTotalStudents').innerText = data.students.length;
+
+            // Transactions Today
+            const today = new Date().toISOString().split('T')[0];
+            const transCount = data.fees.filter(f => f.date === today).length + 
+                               data.expenses.filter(e => e.date === today).length;
+            document.getElementById('dashTransToday').innerText = transCount;
+
+            // Recent Transactions Table
+            const allTrans = [
+                ...data.fees.map(f => ({
+                    date: f.date, 
+                    type: 'Fee', 
+                    desc: f.studentName, 
+                    amount: f.amount, 
+                    status: 'Received',
+                    ts: new Date(f.recordedAt || f.date).getTime()
+                })),
+                ...data.expenses.map(e => ({
+                    date: e.date, 
+                    type: 'Expense', 
+                    desc: e.category, 
+                    amount: e.amount, 
+                    status: 'Paid',
+                    ts: new Date(e.recordedAt || e.date).getTime()
+                }))
+            ].sort((a,b) => b.ts - a.ts).slice(0, 5);
+
+            const tbody = document.getElementById('dashRecentTransactions');
+            if(allTrans.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No transactions yet</td></tr>';
+            } else {
+                tbody.innerHTML = allTrans.map(t => `
+                    <tr>
+                        <td>${new Date(t.date).toLocaleDateString()}</td>
+                        <td><span class="badge ${t.type === 'Fee' ? 'badge-success' : 'badge-error'}">${t.type}</span></td>
+                        <td>${t.desc}</td>
+                        <td class="${t.type === 'Fee' ? 'text-success' : 'text-error'}">₹${t.amount}</td>
+                        <td>${t.status}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // --- Batches ---
+        function addBatch() {
+            const name = document.getElementById('batchName').value;
+            const grade = document.getElementById('batchGrade').value;
+            if(!name) return alert("Batch name is required");
+
+            const newBatch = {
+                id: Date.now(),
+                name,
+                grade,
+                schedule: document.getElementById('batchSchedule').value,
+                strength: document.getElementById('batchStrength').value,
+                fee: document.getElementById('batchFee').value,
+                teacher: document.getElementById('batchTeacher').value
+            };
+            data.batches.push(newBatch);
+            saveData();
+            
+            // Reset form
+            document.getElementById('batchName').value = '';
+            document.getElementById('batchGrade').value = '';
+            document.getElementById('batchSchedule').value = '';
+            document.getElementById('batchStrength').value = '';
+            document.getElementById('batchFee').value = '';
+            
+            renderBatches();
+            updateAllSelects();
+            alert("Batch added successfully!");
+        }
+
+        function renderBatches() {
+            const tbody = document.getElementById('batchesList');
+            if(data.batches.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No batches yet</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.batches.map(b => {
+                const count = data.students.filter(s => s.batchId == b.id).length;
+                return `
+                <tr>
+                    <td><strong>${b.name}</strong></td>
+                    <td>${b.grade}</td>
+                    <td>${b.schedule}</td>
+                    <td>${b.teacher || '-'}</td>
+                    <td>₹${b.fee}</td>
+                    <td><span class="badge badge-info">${count} Students</span></td>
+                    <td>
+                        <button class="btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="openBatchDetails(${b.id})">Manage</button>
+                        <button class="btn-danger" onclick="deleteBatch(${b.id})"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `}).join('');
+        }
+
+        function deleteBatch(id) {
+            if(confirm("Are you sure? This will not delete students, but unassign them.")) {
+                data.batches = data.batches.filter(b => b.id !== id);
+                // Unassign students
+                data.students.forEach(s => {
+                    if(s.batchId == id) s.batchId = null;
+                });
+                saveData();
+                renderBatches();
+                updateAllSelects();
+            }
+        }
+
+        function openBatchDetails(id) {
+            const batch = data.batches.find(b => b.id === id);
+            if(!batch) return;
+
+            document.getElementById('batchStudentCard').style.display = 'block';
+            document.getElementById('selectedBatchTitle').innerText = `${batch.name} - Students`;
+            
+            const students = data.students.filter(s => s.batchId == id);
+            const tbody = document.getElementById('batchSpecificStudentList');
+            
+            if(students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No students in this batch</td></tr>';
+            } else {
+                tbody.innerHTML = students.map(s => `
+                    <tr>
+                        <td>${s.roll}</td>
+                        <td>${s.name}</td>
+                        <td>${s.phone}</td>
+                        <td><button class="btn-danger" onclick="removeStudentFromBatch(${s.id})">Remove</button></td>
+                    </tr>
+                `).join('');
+            }
+            // Scroll to details
+            document.getElementById('batchStudentCard').scrollIntoView({behavior: 'smooth'});
+        }
+
+        function closeBatchDetails() {
+            document.getElementById('batchStudentCard').style.display = 'none';
+        }
+
+        function removeStudentFromBatch(studentId) {
+            const s = data.students.find(st => st.id === studentId);
+            if(s) {
+                const oldBatchId = s.batchId;
+                s.batchId = null;
+                saveData();
+                openBatchDetails(oldBatchId); // Refresh list
+                renderStudents(); // Refresh main list
+            }
+        }
+
+        // --- Students ---
+        function addNewStudent() {
+            const name = document.getElementById('newStudentName').value;
+            const roll = document.getElementById('newStudentRoll').value;
+            if(!name || !roll) return alert("Name and Roll No are required");
+
+            const newStudent = {
+                id: Date.now(),
+                name,
+                roll,
+                phone: document.getElementById('newStudentPhone').value,
+                email: document.getElementById('newStudentEmail').value,
+                batchId: document.getElementById('newStudentBatch').value,
+                joinDate: document.getElementById('newStudentJoinDate').value,
+                address: document.getElementById('newStudentAddress').value,
+                status: 'Active'
+            };
+            data.students.push(newStudent);
+            saveData();
+            
+            // Clear Inputs
+            document.getElementById('newStudentName').value = '';
+            document.getElementById('newStudentRoll').value = '';
+            document.getElementById('newStudentPhone').value = '';
+            document.getElementById('newStudentEmail').value = '';
+            document.getElementById('newStudentAddress').value = '';
+            
+            renderStudents();
+            renderBatches(); // Update counts
+            alert("Student added!");
+        }
+
+        function renderStudents() {
+            const tbody = document.getElementById('allStudentsList');
+            if(data.students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No students yet</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.students.map(s => {
+                const batch = data.batches.find(b => b.id == s.batchId);
+                return `
+                <tr>
+                    <td><strong>${s.roll}</strong></td>
+                    <td>${s.name}</td>
+                    <td>${batch ? batch.name : '<span style="color:#999">Unassigned</span>'}</td>
+                    <td>${s.phone}</td>
+                    <td>${new Date(s.joinDate).toLocaleDateString()}</td>
+                    <td><span class="badge badge-success">${s.status}</span></td>
+                    <td><button class="btn-danger" onclick="deleteStudent(${s.id})"><i class="fas fa-trash"></i></button></td>
+                </tr>
+            `}).join('');
+        }
+
+        function deleteStudent(id) {
+            if(confirm("Delete this student permanently?")) {
+                data.students = data.students.filter(s => s.id !== id);
+                saveData();
+                renderStudents();
+                renderBatches();
+            }
+        }
+
+        // --- Fees ---
+        function loadBatchStudents() {
+            const batchId = document.getElementById('feeBatch').value;
+            const studentSelect = document.getElementById('feeStudent');
+            studentSelect.innerHTML = '<option value="">Select Student</option>';
+            
+            if(!batchId) return;
+
+            // Auto-fill amount if batch has fee
+            const batch = data.batches.find(b => b.id == batchId);
+            if(batch) document.getElementById('feeAmount').value = batch.fee;
+
+            const students = data.students.filter(s => s.batchId == batchId);
+            students.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.id;
+                opt.innerText = `${s.roll} - ${s.name}`;
+                studentSelect.appendChild(opt);
+            });
+        }
+
+        function recordFee() {
+            const batchId = document.getElementById('feeBatch').value;
+            const studentId = document.getElementById('feeStudent').value;
+            const amount = document.getElementById('feeAmount').value;
+
+            if(!batchId || !studentId || !amount) return alert("Please fill all required fields");
+
+            const student = data.students.find(s => s.id == studentId);
+            
+            const newFee = {
+                id: Date.now(),
+                batchId,
+                studentId,
+                studentName: student ? student.name : 'Unknown',
+                amount: parseFloat(amount),
+                mode: document.getElementById('feeMode').value,
+                date: document.getElementById('feeDate').value,
+                month: document.getElementById('feeMonth').value,
+                notes: document.getElementById('feeNotes').value,
+                recordedAt: new Date().toISOString()
+            };
+            
+            data.fees.push(newFee);
+            saveData();
+            renderFees();
+            updateDashboard();
+            alert("Payment Recorded!");
+            
+            // Reset simplified
+            document.getElementById('feeStudent').value = '';
+            document.getElementById('feeAmount').value = '';
+        }
+
+        function renderFees() {
+            const tbody = document.getElementById('feesList');
+            // Sort by newest
+            const sorted = [...data.fees].sort((a,b) => new Date(b.date) - new Date(a.date));
+            
+            if(sorted.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No fees recorded</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = sorted.map(f => {
+                const batch = data.batches.find(b => b.id == f.batchId);
+                return `
+                <tr>
+                    <td>${new Date(f.date).toLocaleDateString()}</td>
+                    <td><strong>${f.studentName}</strong></td>
+                    <td>${batch ? batch.name : '-'}</td>
+                    <td class="text-success">₹${f.amount}</td>
+                    <td>${f.mode}</td>
+                    <td>${f.month}</td>
+                    <td><button class="btn-danger" onclick="deleteFee(${f.id})"><i class="fas fa-trash"></i></button></td>
+                </tr>
+            `}).join('');
+        }
+
+        function deleteFee(id) {
+            if(confirm("Remove this payment record?")) {
+                data.fees = data.fees.filter(f => f.id !== id);
+                saveData();
+                renderFees();
+                updateDashboard();
+            }
+        }
+
+        // --- Expenses ---
+        function recordExpense() {
+            const cat = document.getElementById('expenseCategory').value;
+            const amount = document.getElementById('expenseAmount').value;
+            if(!cat || !amount) return alert("Category and Amount required");
+
+            const exp = {
+                id: Date.now(),
+                category: cat,
+                description: document.getElementById('expenseDesc').value,
+                amount: parseFloat(amount),
+                date: document.getElementById('expenseDate').value,
+                mode: document.getElementById('expenseMode').value,
+                recordedAt: new Date().toISOString()
+            };
+
+            data.expenses.push(exp);
+            saveData();
+            
+            document.getElementById('expenseDesc').value = '';
+            document.getElementById('expenseAmount').value = '';
+            
+            renderExpenses();
+            updateDashboard();
+            alert("Expense Saved");
+        }
+
+        function renderExpenses() {
+            const tbody = document.getElementById('expensesList');
+            const sorted = [...data.expenses].sort((a,b) => new Date(b.date) - new Date(a.date));
+            
+            if(sorted.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No expenses recorded</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = sorted.map(e => `
+                <tr>
+                    <td>${new Date(e.date).toLocaleDateString()}</td>
+                    <td><span class="badge badge-warning">${e.category}</span></td>
+                    <td>${e.description}</td>
+                    <td class="text-error">₹${e.amount}</td>
+                    <td>${e.mode}</td>
+                    <td><button class="btn-danger" onclick="deleteExpense(${e.id})"><i class="fas fa-trash"></i></button></td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteExpense(id) {
+            if(confirm("Delete this expense?")) {
+                data.expenses = data.expenses.filter(e => e.id !== id);
+                saveData();
+                renderExpenses();
+                updateDashboard();
+            }
+        }
+
+        // --- Staff ---
+        function addStaff() {
+            const name = document.getElementById('staffName').value;
+            if(!name) return alert("Name required");
+
+            const staff = {
+                id: Date.now(),
+                name,
+                position: document.getElementById('staffPosition').value,
+                salary: parseFloat(document.getElementById('staffSalary').value)||0,
+                phone: document.getElementById('staffPhone').value,
+                email: document.getElementById('staffEmail').value,
+                joinDate: document.getElementById('staffDate').value
+            };
+            data.staff.push(staff);
+            saveData();
+            
+            // Clear
+            document.getElementById('staffName').value = '';
+            document.getElementById('staffSalary').value = '';
+            document.getElementById('staffPhone').value = '';
+            document.getElementById('staffEmail').value = '';
+            
+            renderStaff();
+            updateAllSelects(); // Updates teacher list in Batches
+            alert("Staff added");
+        }
+
+        function renderStaff() {
+            const tbody = document.getElementById('staffList');
+            if(data.staff.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No staff added</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.staff.map(s => `
+                <tr>
+                    <td><strong>${s.name}</strong></td>
+                    <td>${s.position}</td>
+                    <td>₹${s.salary}</td>
+                    <td>${s.phone}</td>
+                    <td><button class="btn-danger" onclick="deleteStaff(${s.id})"><i class="fas fa-trash"></i></button></td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteStaff(id) {
+            if(confirm("Remove staff member?")) {
+                data.staff = data.staff.filter(s => s.id !== id);
+                saveData();
+                renderStaff();
+                updateAllSelects();
+            }
+        }
+
+        // --- Equipment ---
+        function addEquipment() {
+            const name = document.getElementById('equipName').value;
+            if(!name) return alert("Name required");
+
+            const item = {
+                id: Date.now(),
+                name,
+                category: document.getElementById('equipCategory').value,
+                cost: parseFloat(document.getElementById('equipCost').value)||0,
+                date: document.getElementById('equipDate').value,
+                condition: document.getElementById('equipCondition').value,
+                location: document.getElementById('equipLocation').value
+            };
+            data.equipment.push(item);
+            saveData();
+            
+            document.getElementById('equipName').value = '';
+            document.getElementById('equipCost').value = '';
+            document.getElementById('equipLocation').value = '';
+            
+            renderEquipment();
+            alert("Item Added");
+        }
+
+        function renderEquipment() {
+            const tbody = document.getElementById('equipmentList');
+            if(data.equipment.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No equipment recorded</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.equipment.map(e => `
+                <tr>
+                    <td><strong>${e.name}</strong></td>
+                    <td>${e.category}</td>
+                    <td>₹${e.cost}</td>
+                    <td>${new Date(e.date).toLocaleDateString()}</td>
+                    <td><span class="badge ${e.condition==='Good'?'badge-success':e.condition==='Fair'?'badge-warning':'badge-error'}">${e.condition}</span></td>
+                    <td><button class="btn-danger" onclick="deleteEquipment(${e.id})"><i class="fas fa-trash"></i></button></td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteEquipment(id) {
+            if(confirm("Delete item?")) {
+                data.equipment = data.equipment.filter(e => e.id !== id);
+                saveData();
+                renderEquipment();
+            }
+        }
+
+        // --- Reports ---
+        function generateReport() {
+            const month = document.getElementById('reportMonth').value;
+            
+            // Filter Data
+            const monthFees = data.fees.filter(f => f.month === month);
+            // Expense Logic: Check if expense date falls in month (simple approximation by month string matching if user selected it, else by date parsing)
+            // Ideally expenses should store 'month' too, but we use date. Let's parse date.
+            const monthIdx = new Date(Date.parse(month + " 1, 2023")).getMonth(); // Get month index 0-11
+            const monthExpenses = data.expenses.filter(e => new Date(e.date).getMonth() === monthIdx);
+
+            const totalFees = monthFees.reduce((sum, f) => sum + f.amount, 0);
+            const totalExpenses = monthExpenses.reduce((sum, e) => sum + e.amount, 0);
+
+            document.getElementById('reportFees').innerText = '₹' + totalFees;
+            document.getElementById('reportExpenses').innerText = '₹' + totalExpenses;
+            document.getElementById('reportProfit').innerText = '₹' + (totalFees - totalExpenses);
+
+            // Fee by Batch
+            const feeByBatch = {};
+            monthFees.forEach(f => {
+                const bName = data.batches.find(b => b.id == f.batchId)?.name || 'Unknown';
+                if(!feeByBatch[bName]) feeByBatch[bName] = {count:0, amount:0};
+                feeByBatch[bName].count++;
+                feeByBatch[bName].amount += f.amount;
+            });
+            
+            const feeTable = document.getElementById('reportFeesTable');
+            feeTable.innerHTML = Object.keys(feeByBatch).length ? Object.keys(feeByBatch).map(k => `
+                <tr><td>${k}</td><td>${feeByBatch[k].count}</td><td>₹${feeByBatch[k].amount}</td></tr>
+            `).join('') : '<tr><td colspan="3" class="empty-state">No data for this month</td></tr>';
+
+            // Expense by Cat
+            const expByCat = {};
+            monthExpenses.forEach(e => {
+                if(!expByCat[e.category]) expByCat[e.category] = {count:0, amount:0};
+                expByCat[e.category].count++;
+                expByCat[e.category].amount += e.amount;
+            });
+
+            const expTable = document.getElementById('reportExpensesTable');
+            expTable.innerHTML = Object.keys(expByCat).length ? Object.keys(expByCat).map(k => `
+                <tr><td>${k}</td><td>${expByCat[k].count}</td><td>₹${expByCat[k].amount}</td></tr>
+            `).join('') : '<tr><td colspan="3" class="empty-state">No data for this month</td></tr>';
+
+            document.getElementById('reportCard').style.display = 'block';
+        }
+
+        function exportReport() {
+            const month = document.getElementById('reportMonth').value;
+            let csv = `Report for ${month}\n\nType,Date,Description,Amount\n`;
+            
+            // Get data again (re-filtering for simplicity)
+            const monthIdx = new Date(Date.parse(month + " 1, 2023")).getMonth();
+            
+            data.fees.filter(f => f.month === month).forEach(f => {
+                csv += `Income,${f.date},${f.studentName},${f.amount}\n`;
+            });
+            
+            data.expenses.filter(e => new Date(e.date).getMonth() === monthIdx).forEach(e => {
+                csv += `Expense,${e.date},${e.category},-${e.amount}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `IqraReport_${month}.csv`;
+            a.click();
+        }
+
+        // --- Helpers ---
+        function updateAllSelects() {
+            // Update Teacher Select
+            const teacherSelect = document.getElementById('batchTeacher');
+            const teachers = data.staff.filter(s => s.position === 'Teacher');
+            const currT = teacherSelect.value;
+            teacherSelect.innerHTML = '<option value="">Select Teacher</option>' + 
+                teachers.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
+            teacherSelect.value = currT;
+
+            // Update Batch Selects
+            const batchSelects = ['newStudentBatch', 'feeBatch'];
+            batchSelects.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    const curr = el.value;
+                    el.innerHTML = '<option value="">Select Batch</option>' + 
+                        data.batches.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+                    el.value = curr;
+                }
+            });
+        }
+
+        function saveSettings() {
+            data.settings = {
+                centerName: document.getElementById('centerName').value,
+                phone: document.getElementById('centerPhone').value,
+                email: document.getElementById('centerEmail').value,
+                address: document.getElementById('centerAddress').value
+            };
+            saveData();
+            alert("Settings Saved");
+        }
+
+        function backupData() {
+            const blob = new Blob([JSON.stringify(data)], {type : 'application/json'});
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'IqraBackup.json';
+            a.click();
+        }
+
+        function restoreData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = event => {
+                    try {
+                        const parsed = JSON.parse(event.target.result);
+                        if(confirm("This will overwrite current data. Continue?")) {
+                            data = parsed;
+                            saveData();
+                            location.reload();
+                        }
+                    } catch(err) {
+                        alert("Invalid file");
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function clearAllData() {
+            if(confirm("WARNING: This will delete ALL data. This cannot be undone.")) {
+                localStorage.removeItem('iqraData');
+                location.reload();
+            }
+        }
+    </script>
+</body>
+  </html>
