@@ -1,2 +1,3 @@
 # IQRA-CLASSES-management-
-Management 
+Management for coaching and school
+
